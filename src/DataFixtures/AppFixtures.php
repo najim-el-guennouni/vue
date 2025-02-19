@@ -1,17 +1,17 @@
 <?php
-
+// src/DataFixtures/AppFixtures.php
 namespace App\DataFixtures;
 
-use App\Entity\Category;
 use App\Entity\Color;
 use App\Entity\Product;
-use Doctrine\Bundle\FixturesBundle\Fixture;
+use App\Entity\Category;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\Filesystem\Filesystem;
 
 class AppFixtures extends Fixture
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $colorRed = new Color('red', 'ff0000');
         $colorGreen = new Color('green', '00ff00');
@@ -74,7 +74,6 @@ class AppFixtures extends Fixture
 
         $manager->flush();
     }
-
     private static function getProductsData()
     {
         /* OFFICE SUPPLIES */
