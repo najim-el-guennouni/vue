@@ -13,6 +13,8 @@
         "regenerator-runtime": "^0.13.2",
         "sass": "^1.29.0",
         "sass-loader": "^8.0.0",
+        "vue": "^3.5.13",
+        "vue-loader": "16.0.0-alpha.1",
         "webpack-notifier": "^1.6.0"
     },
     "license": "UNLICENSED",
@@ -23,5 +25,9 @@
         "watch": "set NODE_OPTIONS=--openssl-legacy-provider && encore dev --watch",
         "build": "set NODE_OPTIONS=--openssl-legacy-provider && encore production --progress",
         "lint": "node_modules/.bin/eslint assets/** --ignore-pattern *.scss --ignore-pattern *.gif --ignore-pattern *.png"
+    },
+    "dependencies": {
+        "@vue/compiler-sfc": "^3.5.13",
+        "vue-template-compiler": "2.x"
     }
 }
