@@ -34,8 +34,14 @@ Encore
 
     // will require an extra script tag for runtime.js
     // but, you probably want this, unless you're building a single-page app
-    .enableSingleRuntimeChunk()
+    .enableSingleRuntimeChunk();
+const path = require('path');
 
+Encore
+    .addAliases({
+        '@': path.resolve(__dirname, 'assets', 'js'),
+        styles: path.resolve(__dirname, 'assets', 'scss'),
+    })
     /*
      * FEATURE CONFIG
      *
@@ -66,7 +72,13 @@ Encore
     .enableSassLoader()
 
     // enables Vue 3 support (ensure vue-loader is version 15 or above)
-    .enableVueLoader();
+    .enableVueLoader()
+    .configureCssLoader((config) => {
+        if (!Encore.isProduction() && config.modules) {
+            config.modules.localIdentName = '[name]_[local]_[hash:base64:5]';
+        }
+    });
+
 
 // uncomment if you use TypeScript
 //.enableTypeScriptLoader()
@@ -81,5 +93,7 @@ Encore
 // uncomment if you use API Platform Admin (composer req api-admin)
 //.enableReactPreset()
 //.addEntry('admin', './assets/js/admin.js')
-
+if (!Encore.isProduction()) {
+    Encore.disableCssExtraction();
+}
 module.exports = Encore.getWebpackConfig();
