@@ -1,15 +1,4 @@
-import { createApp, compile } from 'vue';
+import { createApp } from 'vue';
+import App from './pages/products';
 
-const app = createApp({
-    data() {
-        return {
-            firstName: 'Najim',
-        };
-    },
-    render() {
-        // Compile the template and pass the context
-        return compile('<h1>Hello {{ firstName }} Vue!</h1>')(this);
-    }
-});
-
-app.mount('#app');
+createApp(App).mount('#app');

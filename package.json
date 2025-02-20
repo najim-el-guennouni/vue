@@ -4,6 +4,9 @@
     ],
     "devDependencies": {
         "@symfony/webpack-encore": "^0.30.0",
+        "@vitejs/plugin-vue": "^5.2.1",
+        "@vue/compiler-sfc": "^3.5.13",
+        "@vue/component-compiler-utils": "1.3.1",
         "bootstrap": "^4.4.1",
         "core-js": "^3.0.0",
         "eslint": "^6.7.2",
@@ -14,7 +17,8 @@
         "sass": "^1.29.0",
         "sass-loader": "^8.0.0",
         "vue": "^3.5.13",
-        "vue-loader": "16.0.0-alpha.1",
+        "vue-loader": "^17.4.2",
+        "vue-template-compiler": "^2.7.16",
         "webpack-notifier": "^1.6.0"
     },
     "license": "UNLICENSED",
@@ -25,9 +29,5 @@
         "watch": "set NODE_OPTIONS=--openssl-legacy-provider && encore dev --watch",
         "build": "set NODE_OPTIONS=--openssl-legacy-provider && encore production --progress",
         "lint": "node_modules/.bin/eslint assets/** --ignore-pattern *.scss --ignore-pattern *.gif --ignore-pattern *.png"
-    },
-    "dependencies": {
-        "@vue/compiler-sfc": "^3.5.13",
-        "vue-template-compiler": "2.x"
     }
 }

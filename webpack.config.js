@@ -66,9 +66,8 @@ Encore
     .enableSassLoader()
 
     // enables Vue 3 support (ensure vue-loader is version 15 or above)
-    .enableVueLoader((options) => {
-        options.compiler = require('@vue/compiler-sfc');  // Specify Vue 3 compiler
-    })
+    .enableVueLoader()
+
 // uncomment if you use TypeScript
 //.enableTypeScriptLoader()
 
