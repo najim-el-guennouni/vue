@@ -4,11 +4,12 @@
             <aside :class="asideClass">
                 <sidebar
                     :collapsed="sidebarCollapsed"
+                    :current-category-id="currentCategoryId"
                     @toggle-collapsed="toggleSidebarCollapsed"
                 />
             </aside>
             <div :class="contentClass">
-                <catalog />
+                <catalog :current-category-id="currentCategoryId" />
             </div>
         </div>
     </div>
@@ -17,6 +18,7 @@
 <script>
 import Catalog from '@/components/catalog';
 import Sidebar from '@/components/sidebar';
+import { getCurrentCategoryId } from '@/services/page-context';
 
 export default {
     name: 'Products',
@@ -36,6 +38,9 @@ export default {
         contentClass() {
             return this.sidebarCollapsed ? 'col-xs-12 col-11' : 'col-xs-12 col-9';
         },
+        currentCategoryId() {
+            return getCurrentCategoryId();
+        },
     },
     methods: {
         toggleSidebarCollapsed() {
@@ -43,5 +48,4 @@ export default {
         },
     },
 };
-
 </script>

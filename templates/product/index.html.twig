@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<div id="app">
+    <div id="app">
 
-</div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
@@ -14,6 +14,7 @@
         {% else %}
         window.currentCategoryId = null;
         {% endif %}
+        window.categories = {{ categories|jsonld }};
     </script>
     {{ encore_entry_script_tags('products') }}
 {% endblock %}
