@@ -15,7 +15,7 @@
 
             <div class="p-2 my-3 d-md-flex justify-content-between">
                 <p class="p-0 d-inline">
-                    <strong>${{ price }}</strong>
+                    <strong>{{ price }}</strong>
                 </p>
 
                 <button
@@ -33,6 +33,8 @@
 </template>
 
 <script>
+import formatPrice from '@/helpers/format-price';
+
 export default {
     name: 'ProductCard',
     props: {
@@ -47,19 +49,20 @@ export default {
      * @returns {string}
      */
         price() {
-            return (this.product.price / 100)
-                .toLocaleString('en-US', { minimumFractionDigits: 2 });
+            return formatPrice(this.product.price);
         },
     },
 };
 </script>
 <style lang="scss" module>
 @import '~styles/components/light-component';
+
 .product-box {
   border: 1px solid $light-component-border;
   box-shadow: 0 0 7px 4px #efefee;
   border-radius: 5px;
 }
+
 .image {
   img {
     width: 100%;
@@ -67,6 +70,7 @@ export default {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
   }
+
   h3 {
     font-size: 1.2rem;
   }

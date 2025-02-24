@@ -12,7 +12,7 @@
             </div>
         </div>
         <product-list
-            :products="filteredProducts"
+            :products="products"
             :loading="loading"
         />
         <div class="row">
@@ -48,37 +48,40 @@ export default {
     data() {
         return {
             products: [],
-            searchTerm: '',
             loading: false,
             legend: 'Shipping takes 10-13 weeks, and products probably won\'t work',
+            searchTerm: null,
         };
     },
-    computed: {
-        filteredProducts() {
-            if (!this.searchTerm) {
-                return this.products;
-            }
-            return this.products.filter((product) => (
-                product.name.toLowerCase()
-                    .includes(this.searchTerm.toLowerCase())
-            ));
+    watch: {
+        currentCategoryId() {
+            this.loadProducts();
         },
     },
-    async created() {
-        this.loading = true;
-        let response;
-        try {
-            response = await fetchProducts(this.currentCategoryId);
-            this.loading = false;
-        } catch (e) {
-            this.loading = false;
-            return;
-        }
-        this.products = response.data['hydra:member'];
+    created() {
+        this.loadProducts();
     },
     methods: {
-        onSearchProducts(event) {
-            this.searchTerm = event.term;
+    /**
+     * Handles a change in the searchTerm provided by the search bar and fetches new products
+     *
+     * @param {string} term
+     */
+        onSearchProducts({ term }) {
+            this.searchTerm = term;
+            this.loadProducts();
+        },
+        async loadProducts(searchTerm) {
+            this.loading = true;
+            let response;
+            try {
+                response = await fetchProducts(this.currentCategoryId, this.searchTerm);
+                this.loading = false;
+            } catch (e) {
+                this.loading = false;
+                return;
+            }
+            this.products = response.data['hydra:member'];
         },
     },
 };
