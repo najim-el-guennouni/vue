@@ -2,24 +2,24 @@
     <div>
         <div class="row">
             <div class="col-3">
-                <title-component
-                    :current-category-id="currentCategoryId"
-                    :categories="categories"
-                />
+                <title-component :text="categoryName" />
             </div>
             <div class="col-9">
                 <search-bar @search-products="onSearchProducts" />
             </div>
         </div>
+
         <product-list
             :products="products"
             :loading="loading"
         />
+
         <div class="row">
             <legend-component :title="legend" />
         </div>
     </div>
 </template>
+
 <script>
 import { fetchProducts } from '@/services/products-service';
 import LegendComponent from '@/components/legend';
@@ -53,6 +53,17 @@ export default {
             searchTerm: null,
         };
     },
+    computed: {
+        categoryName() {
+            if (this.currentCategoryId === null) {
+                return 'All Products';
+            }
+
+            const category = this.categories.find((cat) => (cat['@id'] === this.currentCategoryId));
+
+            return category ? category.name : '';
+        },
+    },
     watch: {
         currentCategoryId() {
             this.loadProducts();
@@ -71,16 +82,21 @@ export default {
             this.searchTerm = term;
             this.loadProducts();
         },
-        async loadProducts(searchTerm) {
+
+        async loadProducts() {
             this.loading = true;
+
             let response;
             try {
                 response = await fetchProducts(this.currentCategoryId, this.searchTerm);
+
                 this.loading = false;
             } catch (e) {
                 this.loading = false;
+
                 return;
             }
+
             this.products = response.data['hydra:member'];
         },
     },
