@@ -50,6 +50,8 @@
 
                             <button
                                 class="btn btn-info btn-sm"
+                                :disabled="cart === null"
+                                @click="addToCart"
                             >
                                 Add to Cart
                             </button>
@@ -62,11 +64,12 @@
 </template>
 
 <script>
+import { fetchCart, addItemToCart } from '@/services/cart-service.js';
+import formatPrice from '@/helpers/format-price';
 import { fetchOneProduct } from '@/services/products-service';
 import ColorSelector from '@/components/color-selector';
 import Loading from '@/components/loading';
 import TitleComponent from '@/components/title';
-import formatPrice from '@/helpers/format-price';
 
 export default {
     name: 'ProductShow',
@@ -83,6 +86,7 @@ export default {
     },
     data() {
         return {
+            cart: null,
             product: null,
             loading: true,
         };
@@ -97,11 +101,24 @@ export default {
         },
     },
     async created() {
+        fetchCart().then((cart) => {
+            this.cart = cart;
+        });
+
         try {
             this.product = (await fetchOneProduct(this.productId)).data;
         } finally {
             this.loading = false;
         }
+    },
+    methods: {
+        addToCart() {
+            addItemToCart(this.cart, {
+                product: this.product['@id'],
+                color: null,
+                quantity: 1,
+            });
+        },
     },
 };
 </script>

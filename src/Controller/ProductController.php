@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-
 use ApiPlatform\Core\Api\IriConverterInterface;
 use App\Entity\Category;
 use App\Entity\Product;

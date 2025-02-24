@@ -40,8 +40,8 @@
                         </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            Shopping Cart (<span>0</span>)
+                        <a class="nav-link" href="{{ path('app_cart') }}">
+                            Shopping Cart (<span id="js-shopping-cart-items">{{ count_cart_items() }}</span>)
                         </a>
                     </li>
                 </ul>
@@ -58,6 +58,13 @@
         </p>
 
         {% block javascripts %}
+            <script>
+                {% if app.session.has('_cart_id') %}
+                window.cartIri = '{{ app.session.get('_cart_'~app.session.get('_cart_id'))|iri }}';
+                {% else %}
+                window.cartIri = null;
+                {% endif %}
+            </script>
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </body>
