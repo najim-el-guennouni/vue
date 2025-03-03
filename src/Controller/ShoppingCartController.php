@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ShoppingCartController extends AbstractController
 {
     /**
-     * @Route("/shopping-cart", name="app_cart")
+     * @Route("/shopping-cart", name="shopping_cart")
      */
     public function shoppingCart(): Response
     {

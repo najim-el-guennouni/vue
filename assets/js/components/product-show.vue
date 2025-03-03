@@ -40,6 +40,7 @@
                         <div class="d-flex align-items-center justify-content-center">
                             <color-selector
                                 v-if="product.colors.length !== 0"
+                                @color-selected="updateSelectedColor"
                             />
 
                             <input
@@ -73,12 +74,13 @@
 </template>
 
 <script>
-import { fetchCart, addItemToCart } from '@/services/cart-service.js';
+import { addItemToCart, getCartTotalItems } from '@/services/cart-service.js';
 import formatPrice from '@/helpers/format-price';
 import { fetchOneProduct } from '@/services/products-service';
 import ColorSelector from '@/components/color-selector';
 import Loading from '@/components/loading';
 import TitleComponent from '@/components/title';
+import ShoppingCartMixin from '@/mixins/get-shopping-cart';
 
 export default {
     name: 'ProductShow',
@@ -87,6 +89,7 @@ export default {
         Loading,
         TitleComponent,
     },
+    mixins: [ShoppingCartMixin],
     props: {
         productId: {
             type: String,
@@ -95,10 +98,8 @@ export default {
     },
     data() {
         return {
-            cart: null,
             quantity: 1,
-            addToCartLoading: false,
-            addToCartSuccess: false,
+            selectedColorId: null,
             product: null,
             loading: true,
         };
@@ -113,27 +114,23 @@ export default {
         },
     },
     async created() {
-        fetchCart().then((cart) => {
-            this.cart = cart;
-        });
-
         try {
             this.product = (await fetchOneProduct(this.productId)).data;
         } finally {
             this.loading = false;
         }
     },
+
     methods: {
-        async addToCart() {
-            this.addToCartLoading = true;
-            this.addToCartSuccess = false;
-            await addItemToCart(this.cart, {
-                product: this.product['@id'],
-                color: null,
-                quantity: this.quantity,
-            });
-            this.addToCartLoading = false;
-            this.addToCartSuccess = true;
+        addToCart() {
+            this.addProductToCart(
+                this.product,
+                this.selectedColorId,
+                this.quantity,
+            );
+        },
+        updateSelectedColor(iri) {
+            this.selectedColorId = iri;
         },
     },
 };
