@@ -1,0 +1,2 @@
+symfony serve --allow-http
+yarn dev-server --hot

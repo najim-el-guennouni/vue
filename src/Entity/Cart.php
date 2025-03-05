@@ -2,42 +2,44 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use Ramsey\Uuid\Uuid;
+use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Guid\Guid;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
  *     normalizationContext={"groups"="cart:read"},
  *     denormalizationContext={"groups"="cart:write"},
- *     collectionOperations={"post"},
+ *     collectionOperations={
+ *         "get" = {},
+ *         "post" = {}
+ *     },
  *     itemOperations={
- *          "get"={
- *          },
- *          "put"={
- *          },
- *          "delete"={
- *          },
+ *         "get" = {},
+ *         "put" = {},
+ *         "delete" = {}
  *     }
  * )
+ * @ORM\Entity
  */
 class Cart
 {
     /**
-     * @ApiProperty(identifier=true)
+     * @ORM\Id()
+     * @ORM\Column(type="string", unique=true)
      */
     private $id;
 
     /**
-     * @var CartItem[]
+     * @var CartItem[]|array
      * @Groups({"cart:read", "cart:write"})
      */
     private $items = [];
 
     public function __construct()
     {
-        $this->id = (Uuid::uuid4())->toString();
+        $this->id = Guid::uuid4()->toString();
     }
 
     public function getId(): string
@@ -45,9 +47,6 @@ class Cart
         return $this->id;
     }
 
-    /**
-     * @return CartItem[]|array
-     */
     public function getItems(): array
     {
         return $this->items;
@@ -58,7 +57,6 @@ class Cart
         foreach ($this->items as $key => $item) {
             if ($cartItem->matches($item)) {
                 $this->items[$key] = $cartItem;
-
                 return;
             }
         }
@@ -72,7 +70,6 @@ class Cart
             if ($cartItem->matches($item)) {
                 unset($this->items[$key]);
                 $this->items = array_values($this->items);
-
                 return;
             }
         }
