@@ -1,4 +1,10 @@
-import { addItemToCart, fetchCart, getCartTotalItems } from '@/services/cart-service';
+import {
+    addItemToCart,
+    fetchCart,
+    getCartTotalItems,
+    updateCartItemQuantity,
+    removeItemFromCart,
+} from '@/services/cart-service';
 
 export default {
     data() {
@@ -17,7 +23,6 @@ export default {
                 alert('Please select a color first!');
                 return;
             }
-
             this.addToCartLoading = true;
             this.addToCartSuccess = false;
             await addItemToCart(this.cart, {
@@ -27,9 +32,20 @@ export default {
             });
             this.addToCartLoading = false;
             this.addToCartSuccess = true;
-
+            this.updateCartHeaderTotal();
+        },
+        async updateProductQuantity(productId, colorId, quantity) {
+            await updateCartItemQuantity(this.cart, productId, colorId, quantity);
+            this.updateCartHeaderTotal();
+        },
+        updateCartHeaderTotal() {
             document.getElementById('js-shopping-cart-items')
-                .innerHTML = getCartTotalItems(this.cart).toString();
+                .innerHTML = getCartTotalItems(this.cart)
+                    .toString();
+        },
+        async removeProductFromCart(productId, colorId) {
+            await removeItemFromCart(this.cart, productId, colorId);
+            this.updateCartHeaderTotal();
         },
     },
 };

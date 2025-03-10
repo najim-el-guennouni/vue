@@ -101,6 +101,7 @@ export async function removeItemFromCart(cart, productId, colorId) {
     );
 
     const response = await axios.put(getCartIri(), cart);
+    console.log(getCartIri);
 
     return { items: response.data.items };
 }

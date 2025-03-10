@@ -29,6 +29,7 @@ export function fetchProducts(categoryIri, searchTerm) {
 export function fetchOneProduct(iri) {
     return axios.get(iri);
 }
+
 /**
  * Retrieves a set of products identified by an array of IRIs
  *
@@ -45,4 +46,10 @@ export function fetchProductsById(ids) {
             params: { id: ids },
         },
     );
+}
+
+export function fetchFeaturedProducts() {
+    return axios.get('/api/products', {
+        params: { featured: 1 },
+    });
 }

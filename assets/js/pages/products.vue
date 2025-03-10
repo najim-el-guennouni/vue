@@ -24,14 +24,14 @@ import Catalog from '@/components/catalog';
 import Sidebar from '@/components/sidebar';
 import { getCurrentCategoryId, getCurrentProductId } from '@/services/page-context';
 import { fetchCategories } from '@/services/categories-service';
-import ProductShow from '@/components/product-show';
+import Index from '@/components/product-show/index.vue';
 
 
 export default {
     name: 'Products',
     components: {
         Catalog,
-        ProductShow,
+        ProductShow: Index,
         Sidebar,
     },
     data() {
@@ -52,10 +52,10 @@ export default {
             return getCurrentProductId();
         },
         currentComponent() {
-            return this.currentProductId !== null ? ProductShow : Catalog;
+            return this.currentProductId !== null ? Index : Catalog;
         },
         currentProps() {
-            return this.currentComponent === ProductShow ? {
+            return this.currentComponent === Index ? {
                 productId: this.currentProductId,
             } : {
                 currentCategoryId: this.currentCategoryId,

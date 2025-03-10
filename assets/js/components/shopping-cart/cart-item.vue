@@ -3,6 +3,7 @@
         <div class="col-2">
             {{ item.product.name }}
         </div>
+
         <div class="col-1">
             <span
                 class="color-square"
@@ -11,19 +12,26 @@
                 }"
             />
         </div>
+
         <div class="col-3">
             <input
                 :value="item.quantity"
                 class="form-control"
                 type="number"
                 min="1"
+                @input="updateQuantity"
             >
         </div>
+
         <div class="col-3">
             ${{ totalPrice }}
         </div>
+
         <div class="col-3">
-            <button class="btn btn-info btn-sm">
+            <button
+                class="btn btn-info btn-sm"
+                @click="$emit('removeFromCart')"
+            >
                 Remove
             </button>
         </div>
@@ -47,6 +55,13 @@ export default {
         },
         totalPrice() {
             return formatPrice(this.item.product.price * this.item.quantity);
+        },
+    },
+    methods: {
+        updateQuantity(event) {
+            this.$emit('updateQuantity', {
+                quantity: parseFloat(event.target.value),
+            });
         },
     },
 };

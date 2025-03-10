@@ -1,18 +1,49 @@
 <template>
     <div :class="[$style.component, 'container-fluid']">
         <div class="row">
-            <aside class="col-xs-12 col-lg-3" />
+            <aside class="col-xs-12 col-lg-3">
+                <cart-sidebar
+                    v-if="featuredProduct"
+                    :featured-product="featuredProduct"
+                    :allow-add-to-cart="cart !== null"
+                    :add-to-cart-success="addToCartSuccess"
+                    :add-to-cart-loading="addToCartLoading"
+                    @add-to-cart="addProductToCart(
+                        featuredProduct,
+                        $event.selectedColorId,
+                        $event.quantity
+                    )"
+                />
+            </aside>
 
             <div class="col-xs-12 col-lg-9">
-                <title-component text="Shopping Cart" />
+                <title-component :text="pageTitle" />
 
                 <div class="content p-3">
                     <loading v-show="completeCart === null" />
 
                     <shopping-cart-list
-                        v-if="completeCart"
+                        v-if="completeCart && currentState === 'cart'"
                         :items="completeCart.items"
+                        @updateQuantity="updateQuantity"
+                        @removeFromCart="removeProductFromCart(
+                            $event.productId,
+                            $event.colorId,
+                        )"
                     />
+                    <checkout-form
+                        v-if="completeCart && currentState === 'checkout'"
+                    />
+                    <div
+                        v-if="completeCart && completeCart.items.length > 0"
+                    >
+                        <button
+                            class="btn btn-primary"
+                            @click="switchState"
+                        >
+                            {{ buttonText }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -21,27 +52,50 @@
 
 <script>
 import { fetchColors } from '@/services/colors-service';
-import { fetchProductsById } from '@/services/products-service';
+import { fetchFeaturedProducts, fetchProductsById } from '@/services/products-service';
 import ShoppingCartMixin from '@/mixins/get-shopping-cart';
+import CheckoutForm from '@/components/checkout';
 import TitleComponent from '@/components/title';
 import ShoppingCartList from '@/components/shopping-cart';
 import Loading from '@/components/loading';
+import CartSidebar from '@/components/shopping-cart/cart-sidebar';
 
 export default {
     name: 'ShoppingCart',
     components: {
         Loading,
+        CheckoutForm,
         ShoppingCartList,
         TitleComponent,
+        CartSidebar,
     },
     mixins: [ShoppingCartMixin],
     data() {
         return {
+            currentState: 'cart',
             products: null,
             colors: null,
+            featuredProduct: null,
         };
     },
     computed: {
+        components: {
+            CheckoutForm,
+            Loading,
+            ShoppingCartList,
+            TitleComponent,
+            CartSidebar,
+        },
+        buttonText() {
+            return this.currentState === 'cart'
+                ? 'Check Out >>'
+                : '<< Back';
+        },
+        pageTitle() {
+            return this.currentState === 'cart'
+                ? 'Shopping Cart'
+                : 'Checkout';
+        },
         completeCart() {
             if (!this.cart || !this.products || !this.colors) {
                 return null;
@@ -57,24 +111,45 @@ export default {
                 };
             });
             return {
-                items: completeItems,
+                // filter out missing products: they may still be loading
+                items: completeItems.filter((item) => item.product),
             };
         },
     },
     watch: {
-        async cart() {
+        'cart.items.length': function watchCartItemsLength() {
             this.loadProducts();
         },
     },
     async created() {
+        this.loadFeaturedProduct();
         this.colors = (await fetchColors()).data['hydra:member'];
     },
     methods: {
         async loadProducts() {
             const productIds = this.cart.items.map((item) => item.product);
-
             const productsResponse = await fetchProductsById(productIds);
             this.products = productsResponse.data['hydra:member'];
+        },
+        switchState() {
+            this.currentState = this.currentState === 'cart' ? 'checkout' : 'cart';
+        },
+        updateQuantity({
+            productId,
+            colorId,
+            quantity,
+        }) {
+            this.updateProductQuantity(productId, colorId, quantity);
+        },
+
+        async loadFeaturedProduct() {
+            const featuredProducts = (await fetchFeaturedProducts()).data['hydra:member'];
+
+            if (featuredProducts.length === 0) {
+                return;
+            }
+
+            [this.featuredProduct] = featuredProducts;
         },
     },
 };
