@@ -17,23 +17,38 @@
             </aside>
 
             <div class="col-xs-12 col-lg-9">
-                <title-component :text="pageTitle" />
-
+                <transition
+                    name="fade"
+                    mode="out-in"
+                >
+                    <title-component
+                        :key="currentState"
+                        :text="pageTitle"
+                    />
+                </transition>
                 <div class="content p-3">
                     <loading v-show="completeCart === null" />
 
-                    <shopping-cart-list
-                        v-if="completeCart && currentState === 'cart'"
-                        :items="completeCart.items"
-                        @updateQuantity="updateQuantity"
-                        @removeFromCart="removeProductFromCart(
-                            $event.productId,
-                            $event.colorId,
-                        )"
-                    />
-                    <checkout-form
-                        v-if="completeCart && currentState === 'checkout'"
-                    />
+                    <transition
+                        name="fade"
+                        mode="out-in"
+                    >
+                        <shopping-cart-list
+                            v-if="completeCart && currentState === 'cart'"
+                            :items="completeCart.items"
+                            @updateQuantity="updateQuantity"
+                            @removeFromCart="removeProductFromCart(
+                                $event.productId,
+                                $event.colorId,
+                            )"
+                        />
+
+                        <checkout-form
+                            v-else-if="completeCart && currentState === 'checkout'"
+                            :cart="cart"
+                        />
+                    </transition>
+
                     <div
                         v-if="completeCart && completeCart.items.length > 0"
                     >
@@ -63,8 +78,8 @@ import CartSidebar from '@/components/shopping-cart/cart-sidebar';
 export default {
     name: 'ShoppingCart',
     components: {
-        Loading,
         CheckoutForm,
+        Loading,
         ShoppingCartList,
         TitleComponent,
         CartSidebar,
@@ -79,30 +94,15 @@ export default {
         };
     },
     computed: {
-        components: {
-            CheckoutForm,
-            Loading,
-            ShoppingCartList,
-            TitleComponent,
-            CartSidebar,
-        },
-        buttonText() {
-            return this.currentState === 'cart'
-                ? 'Check Out >>'
-                : '<< Back';
-        },
-        pageTitle() {
-            return this.currentState === 'cart'
-                ? 'Shopping Cart'
-                : 'Checkout';
-        },
         completeCart() {
             if (!this.cart || !this.products || !this.colors) {
                 return null;
             }
+
             const completeItems = this.cart.items.map((cartItem) => {
                 const product = this.products.find((productItem) => productItem['@id'] === cartItem.product);
                 const color = this.colors.find((colorItem) => colorItem['@id'] === cartItem.color);
+
                 return {
                     id: `${cartItem.product}_${cartItem.color ? cartItem.color : 'none'}`,
                     product,
@@ -110,10 +110,22 @@ export default {
                     quantity: cartItem.quantity,
                 };
             });
+
             return {
                 // filter out missing products: they may still be loading
                 items: completeItems.filter((item) => item.product),
             };
+        },
+
+        pageTitle() {
+            return this.currentState === 'cart'
+                ? 'Shopping Cart'
+                : 'Checkout';
+        },
+        buttonText() {
+            return this.currentState === 'cart'
+                ? 'Check Out >>'
+                : '<< Back';
         },
     },
     watch: {
@@ -126,13 +138,14 @@ export default {
         this.colors = (await fetchColors()).data['hydra:member'];
     },
     methods: {
-        async loadProducts() {
-            const productIds = this.cart.items.map((item) => item.product);
-            const productsResponse = await fetchProductsById(productIds);
-            this.products = productsResponse.data['hydra:member'];
-        },
         switchState() {
             this.currentState = this.currentState === 'cart' ? 'checkout' : 'cart';
+        },
+        async loadProducts() {
+            const productIds = this.cart.items.map((item) => item.product);
+
+            const productsResponse = await fetchProductsById(productIds);
+            this.products = productsResponse.data['hydra:member'];
         },
         updateQuantity({
             productId,
@@ -161,6 +174,14 @@ export default {
 .component :global {
   .content {
     @include light-component;
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .2s;
+  }
+
+  .fade-enter-form, .fade-leave-to {
+    opacity: 0;
   }
 }
 </style>

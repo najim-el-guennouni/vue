@@ -30,8 +30,9 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import formatPrice from '@/helpers/format-price';
-import CartAddControls from '@/components/product-show/cart-add-controls';
+import CartAddControls from '@/components/product-show/cart-add-controls.vue';
 
 export default {
     name: 'ShoppingCartSidebar',
@@ -56,10 +57,14 @@ export default {
             required: true,
         },
     },
-    computed: {
-        price() {
-            return formatPrice(this.featuredProduct.price);
-        },
+    emits: ['add-to-cart'], // Define emitted events
+    setup(props) {
+    // Computed property for formatted price
+        const price = computed(() => formatPrice(props.featuredProduct.price));
+
+        return {
+            price,
+        };
     },
 };
 </script>

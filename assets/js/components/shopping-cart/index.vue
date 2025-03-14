@@ -41,7 +41,8 @@
 </template>
 
 <script>
-import ShoppingCartItem from '@/components/shopping-cart/cart-item';
+import { computed } from 'vue';
+import ShoppingCartItem from '@/components/shopping-cart/cart-item.vue';
 import formatPrice from '@/helpers/format-price';
 
 export default {
@@ -55,17 +56,16 @@ export default {
             required: true,
         },
     },
-    computed: {
-    /**
-     * Returns the formatted total price of the list
-     *
-     * @return {string}
-     */
-        totalPrice() {
-            return formatPrice(
-                this.items.reduce((acc, item) => (acc + (item.product.price * item.quantity)), 0),
-            );
-        },
+    emits: ['updateQuantity', 'removeFromCart'], // Define emitted events
+    setup(props) {
+    // Computed property for total price
+        const totalPrice = computed(() => formatPrice(
+            props.items.reduce((acc, item) => (acc + (item.product.price * item.quantity)), 0),
+        ));
+
+        return {
+            totalPrice,
+        };
     },
 };
 </script>
